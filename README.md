@@ -1,5 +1,7 @@
 # requests
 
+[![Build Status](https://travis-ci.org/pkg/requests.svg?branch=master)](https://travis-ci.org/pkg/requests)
+
 HTTP for Gophers.
 
 ## Roadmap
