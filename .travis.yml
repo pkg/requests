@@ -1,0 +1,14 @@
+language: go
+go_import_path: github.com/pkg/requests
+go:
+  - 1.7.x
+  - 1.8.x
+  - tip
+
+sudo: false
+
+install:
+  - go get -t -v ./...
+
+script:
+  - go test ./... && go test -race ./...
