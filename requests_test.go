@@ -7,26 +7,6 @@ import (
 	"testing"
 )
 
-func TestStatusString(t *testing.T) {
-	tests := []struct {
-		Status
-		want string
-	}{{
-		Status{
-			Code:   200,
-			Reason: "OK",
-		},
-		"200 OK",
-	}}
-
-	for _, tt := range tests {
-		got := tt.Status.String()
-		if got != tt.want {
-			t.Errorf("got: %q, want: %q", got, tt.want)
-		}
-	}
-}
-
 func TestBodyJSON(t *testing.T) {
 	jsonbody := func(s string) io.ReadCloser {
 		type rc struct {

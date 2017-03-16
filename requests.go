@@ -2,7 +2,6 @@ package requests
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -71,14 +70,6 @@ type Request struct {
 	Headers []Header
 	Body    io.Reader
 }
-
-// Status is a HTTP reponse status.
-type Status struct {
-	Code   int
-	Reason string
-}
-
-func (s *Status) String() string { return fmt.Sprintf("%d %s", s.Code, s.Reason) }
 
 // Response is a HTTP response.
 type Response struct {
