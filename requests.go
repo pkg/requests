@@ -87,12 +87,16 @@ type Response struct {
 
 type Body struct {
 	io.ReadCloser
+
+	json *json.Decoder
 }
 
 // JSON decodes the next JSON encoded object in the body to v.
 func (b *Body) JSON(v interface{}) error {
-	dec := json.NewDecoder(b)
-	return dec.Decode(v)
+	if b.json == nil {
+		b.json = json.NewDecoder(b)
+	}
+	return b.json.Decode(v)
 }
 
 // return the body as a string, or bytes, or somethign
