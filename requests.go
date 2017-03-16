@@ -2,6 +2,7 @@ package requests
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -76,6 +77,8 @@ type Status struct {
 	Code   int
 	Reason string
 }
+
+func (s *Status) String() string { return fmt.Sprintf("%d %s", s.Code, s.Reason) }
 
 // Response is a HTTP response.
 type Response struct {
