@@ -2,6 +2,8 @@ package requests
 
 import (
 	"io"
+	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -92,7 +94,7 @@ func TestResponseHeader(t *testing.T) {
 	}
 }
 
-func TestRequestToHeaders(t *testing.T) {
+func TestToHeaders(t *testing.T) {
 	tests := []struct {
 		Headers []Header
 		want    map[string][]string
@@ -105,12 +107,58 @@ func TestRequestToHeaders(t *testing.T) {
 			"foo":  []string{"bar"},
 			"cram": []string{"witt", "jannet"},
 		},
+	}, {
+		Headers: []Header{},
+		want:    nil,
 	}}
 
 	for i, tc := range tests {
 		got := toHeaders(tc.Headers)
 		if !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("%d: %v.toHeaders(): got: %v, want: %v", i, tc.Headers, got, tc.want)
+		}
+	}
+}
+
+func TestNewHTTPRequest(t *testing.T) {
+	tests := []struct {
+		Request
+		want http.Request
+	}{{
+		Request{
+			Method: "GET",
+			URL:    "https://example.com",
+			Headers: []Header{
+				{Key: "Connection", Values: []string{"close"}},
+				{Key: "Upgrade", Values: []string{"h2c"}},
+			},
+		},
+		http.Request{
+			Method: "GET",
+			URL: &url.URL{
+				Scheme: "https",
+				Host:   "example.com",
+			},
+			Host:       "example.com",
+			Proto:      "HTTP/1.1",
+			ProtoMajor: 1,
+			ProtoMinor: 1,
+			Header: http.Header{
+				"Connection": []string{"close"},
+				"Upgrade":    []string{"h2c"},
+			},
+		},
+	}}
+
+	for i, tc := range tests {
+		got, err := newHttpRequest(&tc.Request)
+		if err != nil {
+			t.Errorf("%d: %v: %v", i, tc.Request, err)
+			continue
+		}
+
+		if !reflect.DeepEqual(got, &tc.want) {
+			t.Errorf("%d: %v: got:\n%+v, want:\n%+v", i, tc.Request, got, &tc.want)
 		}
 	}
 }
