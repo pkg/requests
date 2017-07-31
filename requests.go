@@ -65,7 +65,8 @@ func (c *Client) do(request *Request) (*Response, error) {
 
 	if c.client == nil {
 		c.client = &*http.DefaultClient
-		c.client.Jar = new(cookiejar.Jar)
+		jar, _ := cookiejar.New(new(cookiejar.Options))
+		c.client.Jar = jar
 		c.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		}
