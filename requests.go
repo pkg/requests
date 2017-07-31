@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/cookiejar"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -64,6 +65,7 @@ func (c *Client) do(request *Request) (*Response, error) {
 
 	if c.client == nil {
 		c.client = &*http.DefaultClient
+		c.client.Jar = new(cookiejar.Jar)
 		c.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		}
