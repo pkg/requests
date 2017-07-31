@@ -11,6 +11,7 @@ import (
 
 // Client is a HTTP Client.
 type Client struct {
+	client *http.Client
 }
 
 // Header is a HTTP header.
@@ -37,7 +38,14 @@ func (c *Client) do(request *Request) (*Response, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	if c.client == nil {
+		c.client = &*http.DefaultClient
+		c.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}
+	}
+
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
