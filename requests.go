@@ -32,6 +32,30 @@ func (c *Client) Get(url string, options ...func(*Request) error) (*Response, er
 	return c.do(&req)
 }
 
+// Post issues a POST request to the specified URL.
+func (c *Client) Post(url string, body io.Reader, options ...func(*Request) error) (*Response, error) {
+	req := Request{
+		Method: "POST",
+		URL:    url,
+		Body:   body,
+	}
+	if err := applyOptions(&req, options...); err != nil {
+		return nil, err
+	}
+	return c.do(&req)
+}
+
+// WithHeader applies the header to the request.
+func WithHeader(key, value string) func(*Request) error {
+	return func(r *Request) error {
+		r.Headers = append(r.Headers, Header{
+			Key:    key,
+			Values: []string{value},
+		})
+		return nil
+	}
+}
+
 func (c *Client) do(request *Request) (*Response, error) {
 	req, err := newHttpRequest(request)
 	if err != nil {
