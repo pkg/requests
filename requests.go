@@ -26,7 +26,7 @@ func (c *Client) Get(url string, options ...func(*Request) error) (*Response, er
 		Method: "GET",
 		URL:    url,
 	}
-	if err := c.applyOptions(&req, options...); err != nil {
+	if err := applyOptions(&req, options...); err != nil {
 		return nil, err
 	}
 	return c.do(&req)
@@ -63,7 +63,7 @@ func (c *Client) do(request *Request) (*Response, error) {
 	return &r, nil
 }
 
-func (c *Client) applyOptions(req *Request, options ...func(*Request) error) error {
+func applyOptions(req *Request, options ...func(*Request) error) error {
 	for _, opt := range options {
 		if err := opt(req); err != nil {
 			return err
