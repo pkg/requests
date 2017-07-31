@@ -108,10 +108,7 @@ func TestRequestToHeaders(t *testing.T) {
 	}}
 
 	for i, tc := range tests {
-		req := Request{
-			Headers: tc.Headers,
-		}
-		got := req.toHeaders()
+		got := toHeaders(tc.Headers)
 		if !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("%d: %v.toHeaders(): got: %v, want: %v", i, tc.Headers, got, tc.want)
 		}

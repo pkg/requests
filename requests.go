@@ -33,12 +33,10 @@ func (c *Client) Get(url string, options ...func(*Request) error) (*Response, er
 }
 
 func (c *Client) do(request *Request) (*Response, error) {
-	req, err := http.NewRequest(request.Method, request.URL, request.Body)
+	req, err := newHttpRequest(request)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
-
-	req.Header = request.toHeaders()
 
 	if c.client == nil {
 		c.client = &*http.DefaultClient
@@ -82,14 +80,24 @@ type Request struct {
 	Body    io.Reader
 }
 
+// newHttpRequest converts a *requests.Request into a *http.Request
+func newHttpRequest(request *Request) (*http.Request, error) {
+	req, err := http.NewRequest(request.Method, request.URL, request.Body)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	req.Header = toHeaders(request.Headers)
+	return req, nil
+}
+
 // toHeaders convers from Request's Headers slice to http.Request's map[string][]string
-func (r *Request) toHeaders() map[string][]string {
-	if len(r.Headers) == 0 {
+func toHeaders(headers []Header) map[string][]string {
+	if len(headers) == 0 {
 		return nil
 	}
 
 	m := make(map[string][]string)
-	for _, h := range r.Headers {
+	for _, h := range headers {
 		m[h.Key] = h.Values
 	}
 	return m
