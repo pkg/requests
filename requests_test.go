@@ -49,3 +49,45 @@ func TestBodyJSON(t *testing.T) {
 		}
 	}
 }
+
+func TestResponseHeader(t *testing.T) {
+	header := func(key, val string, vals ...string) Header {
+		v := []string{val}
+		return Header{
+			Key:    key,
+			Values: append(v, vals...),
+		}
+	}
+
+	resp := &Response{
+		Headers: []Header{
+			header("foo", "bar"),
+			header("quxx", "frob", "frob"),
+		},
+	}
+
+	tests := []struct {
+		*Response
+		key  string
+		want string
+	}{{
+		resp,
+		"foo",
+		"bar",
+	}, {
+		resp,
+		"quxx",
+		"frob,frob",
+	}, {
+		resp,
+		"flimm",
+		"",
+	}}
+
+	for i, tc := range tests {
+		got := tc.Header(tc.key)
+		if got != tc.want {
+			t.Errorf("%d: Header(%q): got %q, want %v", i, tc.key, got, tc.want)
+		}
+	}
+}

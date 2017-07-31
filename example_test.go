@@ -39,3 +39,20 @@ func ExampleBody_JSON() {
 	err = resp.JSON(&results)
 	fmt.Printf("%#v\n%v", results, err)
 }
+
+var response = requests.Response{
+	Headers: []requests.Header{
+		{Key: "Server", Values: []string{"nginx/1.2.1"}},
+		{Key: "Connection", Values: []string{"keep-alive"}},
+		{Key: "Content-Type", Values: []string{"text/html; charset=UTF-8"}},
+	},
+}
+
+func ExampleResponse_Header() {
+	fmt.Println(response.Header("Server"))
+	fmt.Println(response.Header("Content-Type"))
+
+	// Output:
+	// nginx/1.2.1
+	// text/html; charset=UTF-8
+}

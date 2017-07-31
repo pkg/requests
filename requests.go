@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -79,6 +80,24 @@ type Response struct {
 	Body
 }
 
+// Header returns the canonicalised version of a response header as a string
+// If there is no key present in the response the empty string is returned.
+// If multiple headers are present, they are canonicalised into as single string
+// by joining them with a comma. See RFC 2616 § 4.2.
+func (r *Response) Header(key string) string {
+	var vals []string
+	for _, h := range r.Headers {
+
+		// TODO(dfc) § 4.2 states that not all header values can be combined, but equally those
+		// that cannot be combined with a comma may not be present more than once in a
+		// header block.
+		if h.Key == key {
+			vals = append(vals, h.Values...)
+		}
+	}
+	return strings.Join(vals, ",")
+}
+
 type Body struct {
 	io.ReadCloser
 
@@ -93,7 +112,7 @@ func (b *Body) JSON(v interface{}) error {
 	return b.json.Decode(v)
 }
 
-// return the body as a string, or bytes, or somethign
+// return the body as a string, or bytes, or something
 
 func headers(h map[string][]string) []Header {
 	headers := make([]Header, 0, len(h))
