@@ -38,6 +38,8 @@ func (c *Client) do(request *Request) (*Response, error) {
 		return nil, errors.WithStack(err)
 	}
 
+	req.Header = request.toHeaders()
+
 	if c.client == nil {
 		c.client = &*http.DefaultClient
 		c.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
@@ -78,6 +80,19 @@ type Request struct {
 	URL     string
 	Headers []Header
 	Body    io.Reader
+}
+
+// toHeaders convers from Request's Headers slice to http.Request's map[string][]string
+func (r *Request) toHeaders() map[string][]string {
+	if len(r.Headers) == 0 {
+		return nil
+	}
+
+	m := make(map[string][]string)
+	for _, h := range r.Headers {
+		m[h.Key] = h.Values
+	}
+	return m
 }
 
 // Response is a HTTP response.

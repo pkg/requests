@@ -91,3 +91,29 @@ func TestResponseHeader(t *testing.T) {
 		}
 	}
 }
+
+func TestRequestToHeaders(t *testing.T) {
+	tests := []struct {
+		Headers []Header
+		want    map[string][]string
+	}{{
+		Headers: []Header{
+			{Key: "foo", Values: []string{"bar"}},
+			{Key: "cram", Values: []string{"witt", "jannet"}},
+		},
+		want: map[string][]string{
+			"foo":  []string{"bar"},
+			"cram": []string{"witt", "jannet"},
+		},
+	}}
+
+	for i, tc := range tests {
+		req := Request{
+			Headers: tc.Headers,
+		}
+		got := req.toHeaders()
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("%d: %v.toHeaders(): got: %v, want: %v", i, tc.Headers, got, tc.want)
+		}
+	}
+}
